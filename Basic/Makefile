@@ -9,15 +9,20 @@ LIBRARIES := -L $(CUDA_PATH)/lib64  -lcudart
 CC = gcc
 NVCC := $(CUDA_PATH)/bin/nvcc -arch sm_37
 
-# Objects
-OBJS = GPUInfo.o DeviceProperty.o
+# Program Specific Folders
+BINDIR = ./bin/
+SRCDIR = ./src/
+SOURCES = $(wildcard $(SRCDIR)*.cu)
+OBJS = $(SOURCES:$(SRCDIR)%.cu=$(SRCDIR)%.o)
+TARGET = gpuinfo
 
 # Target rules
-GPUInfo: $(OBJS)
-	 $(CC) -o $@  $^  $(INCLUDES) $(LIBRARIES)
+$(BINDIR)$(TARGET): $(OBJS)
+	@mkdir -p $(BINDIR)
+	$(CC) -o $@  $^  $(INCLUDES) $(LIBRARIES)
 
-GPUInfo.o: DeviceProperty.cu GPUInfo.cu
-	$(NVCC) -c $^
+$(OBJS): $(SRCDIR)%.o: $(SRCDIR)%.cu
+	$(NVCC) -c $< -o $@
 
 clean:
-	rm -f GPUInfo $(OBJS)
+	rm -r $(BINDIR) $(OBJS)
