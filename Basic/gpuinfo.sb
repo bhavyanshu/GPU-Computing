@@ -11,4 +11,4 @@
 
 module load cuda/8.0
 
-./GPUInfo
+./bin/gpuinfo
